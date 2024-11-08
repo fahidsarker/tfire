@@ -9,27 +9,27 @@ import { newDocId } from "./helper";
 import { TFireBatch } from "./batch";
 
 export const collection = <T extends DocData, X extends string = string>(
-  collectionName: X
+  collectionName: X,
 ) => {
   return new CollectionCreator<X, T, {}>(
     {} as Firestore,
     collectionName,
     {},
     // `${collectionName}`
-    CollectionPath.createRoot(collectionName)
+    CollectionPath.createRoot(collectionName),
   );
 };
 
 export const createDB = <T extends CollectionCreatorBaseShape>(
   db: Firestore,
-  schema: T
+  schema: T,
 ) => {
   const nDB = {} as any;
   Object.keys(schema).forEach((key) => {
     nDB[key] = (schema as unknown as T)[key].copy(
       db,
       (schema as unknown as T)[key].pathPlaceHolder,
-      undefined
+      undefined,
     );
   });
 

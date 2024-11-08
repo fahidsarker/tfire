@@ -8,7 +8,7 @@ export class CollectionPath {
   private constructor(
     parentCollectionPath: CollectionPath | undefined,
     parentDocId: string | undefined,
-    collectionName: string
+    collectionName: string,
   ) {
     this.parentCollectionPath = parentCollectionPath;
     this.collectionName = collectionName;
@@ -31,7 +31,7 @@ export class CollectionPath {
 
     if (this.parentDocId === undefined) {
       throw new Error(
-        `parentDocId is undefined:: for parentCollectionPath: ${this.parentCollectionPath.path} and collectionName: ${this.collectionName}`
+        `parentDocId is undefined:: for parentCollectionPath: ${this.parentCollectionPath.path} and collectionName: ${this.collectionName}`,
       );
     }
 

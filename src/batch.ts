@@ -14,7 +14,7 @@ export class TFireBatch {
 
   create<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
-    data: WithFieldValue<T>
+    data: WithFieldValue<T>,
   ) {
     this.batch.create<DocData, DocData>(documentRef.ref(), data);
     return this;
@@ -23,7 +23,7 @@ export class TFireBatch {
   set<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
     data: WithFieldValue<T>,
-    options?: FirebaseFirestore.SetOptions
+    options?: FirebaseFirestore.SetOptions,
   ) {
     if (options) {
       this.batch.set<DocData, DocData>(documentRef.ref(), data, options);
@@ -49,19 +49,19 @@ export class TFireBatch {
   update<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
     data: UpdateData<T>,
-    precondition?: FirebaseFirestore.Precondition
+    precondition?: FirebaseFirestore.Precondition,
   ) {
     this.batch.update<DocData, DocData>(
       documentRef.ref(),
       data,
-      precondition ?? {}
+      precondition ?? {},
     );
     return this;
   }
 
   delete<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
-    precondition?: FirebaseFirestore.Precondition
+    precondition?: FirebaseFirestore.Precondition,
   ) {
     this.batch.delete(documentRef.ref(), precondition ?? {});
     return this;

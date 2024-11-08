@@ -16,19 +16,19 @@ export type TFireDocument<
   ref: () => FirebaseFirestore.DocumentReference<T>;
   set: (
     data: WithFieldValue<T>,
-    options?: FirebaseFirestore.SetOptions
+    options?: FirebaseFirestore.SetOptions,
   ) => Promise<FirebaseFirestore.WriteResult>;
   create: (data: WithFieldValue<T>) => Promise<FirebaseFirestore.WriteResult>;
   update: (
     data: UpdateData<T>,
-    precondition?: FirebaseFirestore.Precondition
+    precondition?: FirebaseFirestore.Precondition,
   ) => Promise<FirebaseFirestore.WriteResult>;
   delete: (
-    precondition?: FirebaseFirestore.Precondition
+    precondition?: FirebaseFirestore.Precondition,
   ) => Promise<FirebaseFirestore.WriteResult>;
   onSnapshot: (
     onNext: (snapshot: FirebaseFirestore.DocumentSnapshot<T, DocData>) => void,
-    onError?: (error: Error) => void
+    onError?: (error: Error) => void,
   ) => () => void;
 } & {
   [key in keyof K]: K[key];
@@ -41,7 +41,7 @@ export const Doc = <
   db: Firestore,
   collectionPath: CollectionPath,
   id: string,
-  subCol: K
+  subCol: K,
 ): TFireDocument<T, K> => {
   const path = `${collectionPath.path}/${id}`;
   const doc = db.doc(path);
@@ -61,7 +61,7 @@ export const Doc = <
     create: (data: WithFieldValue<T>) => doc.create(data),
     update: (
       data: UpdateData<T>,
-      precondition?: FirebaseFirestore.Precondition
+      precondition?: FirebaseFirestore.Precondition,
     ) => doc.update(data, precondition ?? {}),
 
     delete: (precondition?: FirebaseFirestore.Precondition) =>
@@ -69,18 +69,18 @@ export const Doc = <
 
     onSnapshot: (
       onNext: (
-        snapshot: FirebaseFirestore.DocumentSnapshot<T, DocData>
+        snapshot: FirebaseFirestore.DocumentSnapshot<T, DocData>,
       ) => void,
-      onError?: (error: Error) => void
+      onError?: (error: Error) => void,
     ) =>
       doc.onSnapshot(
         onNext as (
           snapshot: FirebaseFirestore.DocumentSnapshot<
             FirebaseFirestore.DocumentData,
             FirebaseFirestore.DocumentData
-          >
+          >,
         ) => void,
-        onError
+        onError,
       ),
 
     // to be implemented

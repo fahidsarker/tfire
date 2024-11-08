@@ -32,11 +32,11 @@ const db = createDB(admin.firestore(), {
 describe("Path Creation tests", () => {
   it("should match simple paths", () => {
     expect(db.families.doc("xfamily1").toys.path).toBe(
-      "families/xfamily1/toys"
+      "families/xfamily1/toys",
     );
     expect(db.families.doc("newFamilyId").path).toBe("families/newFamilyId");
     expect(
-      db.families.doc("nfamilies").otherFamily.doc("nfamiliesy").path
+      db.families.doc("nfamilies").otherFamily.doc("nfamiliesy").path,
     ).toBe("families/nfamilies/otherFamilies/nfamiliesy");
 
     expect(
@@ -45,9 +45,9 @@ describe("Path Creation tests", () => {
         .toys.doc("t1")
         .recommendedations.doc("r1")
         .relatedUsers.doc("u1")
-        .children.doc("c1").path
+        .children.doc("c1").path,
     ).toBe(
-      "families/f1/toys/t1/recommendedations/r1/relatedUsers/u1/children/c1"
+      "families/f1/toys/t1/recommendedations/r1/relatedUsers/u1/children/c1",
     );
   });
 });

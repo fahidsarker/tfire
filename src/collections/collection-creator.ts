@@ -19,7 +19,7 @@ export class CollectionCreator<
       this.firestore,
       this.collectionName,
       subCol,
-      this.pathPlaceHolder
+      this.pathPlaceHolder,
     );
   };
 }

@@ -22,7 +22,7 @@ export class Collection<
     db: Firestore,
     collectionName: X,
     subCol: K,
-    path: CollectionPath
+    path: CollectionPath,
   ) {
     this.subCol = subCol;
     this.collectionName = collectionName;
@@ -38,14 +38,14 @@ export class Collection<
   copy = (
     db: Firestore | undefined,
     newPath: CollectionPath,
-    docId: string | undefined
+    docId: string | undefined,
   ) => {
     const nSubCol = {} as any;
     Object.keys(this.subCol).forEach((key) => {
       nSubCol[key] = this.subCol[key].copy(
         db ?? this.db,
         newPath.subRoute(docId, this.subCol[key].collectionName),
-        undefined
+        undefined,
       );
     });
 
@@ -53,7 +53,7 @@ export class Collection<
       db ?? this.db,
       this.collectionName,
       nSubCol,
-      newPath
+      newPath,
     );
   };
 
@@ -82,12 +82,12 @@ export class Collection<
   where<K extends QueryKey<T> = QueryKey<T>>(
     fieldPath: K,
     opStr: FirebaseFirestore.WhereFilterOp,
-    value: T[K]
+    value: T[K],
   ) {
     return new Query<T>(this.db.collection(this.path)).where(
       fieldPath,
       opStr,
-      value
+      value,
     );
   }
 
@@ -100,7 +100,7 @@ export class Collection<
       this.db,
       this.pathPlaceHolder,
       docId,
-      this.copy(undefined, this.pathPlaceHolder, docId).subCol
+      this.copy(undefined, this.pathPlaceHolder, docId).subCol,
     );
   };
 }

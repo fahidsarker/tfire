@@ -13,7 +13,7 @@ export class Query<T extends DocData> {
     | FirebaseFirestore.Query
     | FirebaseFirestore.CollectionReference;
   constructor(
-    query: FirebaseFirestore.Query | FirebaseFirestore.CollectionReference
+    query: FirebaseFirestore.Query | FirebaseFirestore.CollectionReference,
   ) {
     this.query = query;
   }
@@ -25,7 +25,7 @@ export class Query<T extends DocData> {
   where<K extends QueryKey<T> = QueryKey<T>>(
     fieldPath: K,
     opStr: FirebaseFirestore.WhereFilterOp,
-    value: T[K]
+    value: T[K],
   ): Query<T> {
     return this.subQuery(this.query.where(fieldPath, opStr, value));
   }
@@ -34,7 +34,7 @@ export class Query<T extends DocData> {
 
   orderBy(
     fieldPath: QueryKey<T>,
-    directionStr?: FirebaseFirestore.OrderByDirection
+    directionStr?: FirebaseFirestore.OrderByDirection,
   ) {
     return this.subQuery(this.query.orderBy(fieldPath, directionStr));
   }

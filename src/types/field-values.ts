@@ -19,13 +19,13 @@ export class NumFieldValue extends TFieldValue {
 export class ArrayFieldValue extends TFieldValue {
   static arrayUnion(...elements: any[]): TFieldValue {
     return admin.firestore.FieldValue.arrayUnion(
-      ...elements
+      ...elements,
     ) as unknown as ArrayFieldValue;
   }
 
   static arrayRemove(...elements: any[]): TFieldValue {
     return admin.firestore.FieldValue.arrayRemove(
-      ...elements
+      ...elements,
     ) as unknown as ArrayFieldValue;
   }
 }
