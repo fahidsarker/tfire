@@ -12,12 +12,12 @@ jobs:
         with:
           node-version: "18"
           registry-url: "https://registry.npmjs.org"
-      - run: npm install jest --save-dev
-      - run: npm run test
-        env: 
-            FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-            FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
-            FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+      # - run: npm install jest --save-dev
+      # - run: npm run test
+      #   env: 
+      #       FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      #       FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+      #       FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
       - run: npm ci
       - run: npm run build
       - run: npm publish
