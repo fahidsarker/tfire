@@ -1,3 +1,4 @@
+import { Filter } from "./filter";
 import { DocData, Firestore } from "./types/firestore";
 import * as admin from "firebase-admin";
 export type QueryKey<T extends DocData> = keyof T extends string
@@ -13,7 +14,7 @@ export class Query<T extends DocData> {
     | FirebaseFirestore.Query
     | FirebaseFirestore.CollectionReference;
   constructor(
-    query: FirebaseFirestore.Query | FirebaseFirestore.CollectionReference,
+    query: FirebaseFirestore.Query | FirebaseFirestore.CollectionReference
   ) {
     this.query = query;
   }
@@ -22,19 +23,42 @@ export class Query<T extends DocData> {
     return new Query<T>(q);
   }
 
+  // where<K extends QueryKey<T> = QueryKey<T>>(
+  //   fieldPath: K,
+  //   opStr: FirebaseFirestore.WhereFilterOp,
+  //   value: T[K]
+  // ): Query<T> {
+  //   return this.subQuery(this.query.where(fieldPath, opStr, value));
+  // }
+
   where<K extends QueryKey<T> = QueryKey<T>>(
     fieldPath: K,
     opStr: FirebaseFirestore.WhereFilterOp,
-    value: T[K],
-  ): Query<T> {
-    return this.subQuery(this.query.where(fieldPath, opStr, value));
-  }
+    value: T[K]
+  ): Query<T>;
+  where(filter: Filter<T>): Query<T>;
 
-  // where(filter: Filter): Query<AppModelType, DbModelType>;
+  where(
+    fieldKeyOrFilter: QueryKey<T> | Filter<T>,
+    opStr?: FirebaseFirestore.WhereFilterOp,
+    value?: T[QueryKey<T>]
+  ): Query<T> {
+    if (typeof fieldKeyOrFilter === "string") {
+      return this.subQuery(
+        this.query.where(
+          fieldKeyOrFilter,
+          opStr as FirebaseFirestore.WhereFilterOp,
+          value
+        )
+      );
+    }
+
+    return this.subQuery(this.query.where(fieldKeyOrFilter.filter));
+  }
 
   orderBy(
     fieldPath: QueryKey<T>,
-    directionStr?: FirebaseFirestore.OrderByDirection,
+    directionStr?: FirebaseFirestore.OrderByDirection
   ) {
     return this.subQuery(this.query.orderBy(fieldPath, directionStr));
   }

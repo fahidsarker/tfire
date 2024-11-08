@@ -1,6 +1,6 @@
 {
   "name": "tfire",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "A typescript wrapper of firestore (firebase-admin)",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

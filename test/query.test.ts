@@ -4,6 +4,7 @@ import * as admin from "firebase-admin";
 import { Family, User } from "./models";
 import { Timestamp } from "firebase-admin/firestore";
 import { OptionalFieldValue, NumFieldValue } from "../src/types/field-values";
+import { and, Filter, where } from "../src/filter";
 dotenv.config();
 admin.initializeApp({
   projectId: process.env.FIREBASE_PROJECT_ID,
@@ -70,6 +71,54 @@ describe("Query tests", () => {
   it("should query all 3 docs with email 'email'", async () => {
     const users = await db.users.where("email", "==", "email").get();
     expect(users.docs.length).toBe(3);
+    expect(users.docs[0].data().name).toBe("User 1");
+  });
+
+  it("should query all 3 docs with email 'email' but in reverse order", async () => {
+    const users = await db.users.query.findMany({
+      where: where("email", "==", "email"),
+      orderBy: {
+        name: "desc",
+      },
+    });
+    expect(users.length).toBe(3);
+    expect(users[0].name).toBe("User 5");
+  });
+
+  // same with tuery
+  it("should query all 3 docs with email 'email'", async () => {
+    const users = await db.users.query.findMany({
+      where: where("email", "==", "email"),
+      limit: 5,
+    });
+    expect(users.length).toBe(3);
+  });
+
+  // same with tuery
+  it("should query all 2 docs with email 'email'", async () => {
+    const users = await db.users.query.findMany({
+      where: where("email", "==", "email"),
+      limit: 2,
+    });
+    expect(users.length).toBe(2);
+  });
+
+  it("should query first doc with email 'email'", async () => {
+    const user = await db.users.query.findFirst({
+      where: where("email", "==", "email"),
+    });
+
+    expect(user).toBeTruthy();
+    expect(user?.email).toBe("email");
+    expect(user?.password).toBe("password");
+  });
+
+  it("should fail to query first doc with email 'email2' and age = 10", async () => {
+    const user = await db.users.query.findFirst({
+      where: and(where("email", "==", "email2"), where("age", "==", 10)),
+    });
+
+    expect(user).toBeUndefined();
   });
 
   it("should only contain selected types", async () => {
@@ -81,6 +130,40 @@ describe("Query tests", () => {
     expect((dta[0] as any).age).toBeUndefined();
     expect(dta[0].name).toBeTruthy();
     expect(dta[0].password).toBeTruthy();
+  });
+
+  it("should only retrieve 1 doc", async () => {
+    const dta = (
+      await db.users
+        .where(and(where("age", "==", 10), where("name", "==", "User 1")))
+        .select("name", "password")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    expect(dta.length).toBe(1);
+  });
+
+  // same with tuery
+  it("should only retrieve 1 doc but with tquery", async () => {
+    const dta = await db.users.query.findMany({
+      where: {
+        age: 10,
+        name: "User 1",
+      },
+    });
+
+    expect(dta.length).toBe(1);
+  });
+
+  it("should only retrieve 1 doc of age 40 and name = user 1", async () => {
+    const dta = (
+      await db.users
+        .where(and(where("age", "==", 40), where("name", "==", "User 1")))
+        .select("name", "password")
+        .get()
+    ).docs.map((doc) => doc.data());
+
+    expect(dta.length).toBe(0);
   });
 
   afterAll(async () => {

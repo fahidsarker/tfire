@@ -38,12 +38,13 @@ A Typescript wrapper of the `firebase-admin.firestore` module. It provides a ful
 [x] TSW: Support batch operations
 [x] TSW: Support custom types
 [x] TSW: Support custom queries
+[X] ORM: Simpler Query builders - type-safe simpler queries based on schema. `(eg. db.query.users.findFirst({}))`
 [ ] TSW: Support transactions
 [ ] ORM: Transformers - transform values as they are inserted or fetched
-[ ] ORM: Simpler Query builders - type-safe simpler queries based on schema. `(eg. db.query.users.findFirst({}))`
 [ ] TSW: Type-safe collection finder `db.collection("users/u1/posts") => Post[]`
 [ ] ORM: Validators - validate values before they are inserted
 [ ] ORM: Hooks - run functions before or after insert, update, delete operations
+[ ] TSW: Collection Groups
 
 # Usage
 
@@ -149,7 +150,7 @@ const usersSnapshot = await db.users.where("age", ">", 20).select("nama").get();
 const usersSnapshot = await db.users.where("age", ">", 20).select("name").get(); // ✅ no type error return type: Snapshot<{name: string}[]>
 ```
 
-# Batch Operations
+### Batch Operations
 
 ```ts
 // create a new batch
@@ -171,4 +172,17 @@ for (let i = 0; i < 5; i++) {
 await batch.commit();
 ```
 
+### TFQueries
+Use TFQueries where possible to simplify queries and data fetching
+```ts
+const currentUser = await db.query.users.findFirst({where: where("age","==",30)}); // type: User | undefined
+const users = await db.query.users.findMany({where: where("age",">",30), limit: 5}); // type: User[] of max length 5
 
+// equal notations are very common in queries. hence, we built in a shorthand for it
+const adminsOver30 = await db.query.users.findMany({
+  where: {
+    age: 30,
+    type: "admin",
+  }
+}); // type: User[]
+```
