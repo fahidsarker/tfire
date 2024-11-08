@@ -35,6 +35,11 @@ export class Collection<
   get firestore() {
     return this.db;
   }
+
+  get ref() {
+    return this.db.collection(this.path);
+  }
+
   // docIdPlaceHolder = (colName: string) => `__${colName}_DOC_ID__`;
 
   copy = (

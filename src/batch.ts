@@ -1,8 +1,7 @@
-import { SubCollectionBaseShape } from "./collections/collection";
+import { Collection, SubCollectionBaseShape } from "./collections/collection";
 import { TFireDocument } from "./document";
-import { StringKeysOf } from "./query";
 import { WithFieldValue } from "./types/field-values";
-import { DocData, Firestore } from "./types/firestore";
+import { DocData } from "./types/firestore";
 import { UpdateData } from "./types/update-data";
 import * as admin from "firebase-admin";
 
@@ -14,7 +13,7 @@ export class TFireBatch {
 
   create<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
-    data: WithFieldValue<T>,
+    data: WithFieldValue<T>
   ) {
     this.batch.create<DocData, DocData>(documentRef.ref(), data);
     return this;
@@ -23,13 +22,21 @@ export class TFireBatch {
   set<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
     data: WithFieldValue<T>,
-    options?: FirebaseFirestore.SetOptions,
+    options?: FirebaseFirestore.SetOptions
   ) {
     if (options) {
       this.batch.set<DocData, DocData>(documentRef.ref(), data, options);
     } else {
       this.batch.set<DocData, DocData>(documentRef.ref(), data);
     }
+    return this;
+  }
+
+  add<X extends string, T extends DocData, K extends SubCollectionBaseShape>(
+    collectionRef: Collection<X, T, K>,
+    data: WithFieldValue<T>
+  ) {
+    this.batch.create<DocData, DocData>(collectionRef.ref.doc(), data);
     return this;
   }
 
@@ -49,19 +56,19 @@ export class TFireBatch {
   update<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
     data: UpdateData<T>,
-    precondition?: FirebaseFirestore.Precondition,
+    precondition?: FirebaseFirestore.Precondition
   ) {
     this.batch.update<DocData, DocData>(
       documentRef.ref(),
       data,
-      precondition ?? {},
+      precondition ?? {}
     );
     return this;
   }
 
   delete<T extends DocData, K extends SubCollectionBaseShape>(
     documentRef: TFireDocument<T, K>,
-    precondition?: FirebaseFirestore.Precondition,
+    precondition?: FirebaseFirestore.Precondition
   ) {
     this.batch.delete(documentRef.ref(), precondition ?? {});
     return this;
