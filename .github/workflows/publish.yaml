@@ -12,9 +12,11 @@ jobs:
         with:
           node-version: "18"
           registry-url: "https://registry.npmjs.org"
-      # - run: npm run test
+      - run: echo "${{ secrets.ENV }}" > .env
+      - run: npm install jest --save-dev
+      - run: npm run test
       - run: npm ci
       - run: npm run build
       - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
