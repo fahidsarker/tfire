@@ -4,6 +4,8 @@ import { newDocId } from "../helper";
 import { DocData, Firestore } from "../types/firestore";
 import { WithFieldValue } from "../types/field-values";
 import { Query, QueryKey } from "../query";
+import { Filter } from "../filter";
+import { TFQuery } from "../TFQuery";
 
 export type SubCollectionBaseShape = {
   [key: string]: Collection<string, {}, any>;
@@ -22,7 +24,7 @@ export class Collection<
     db: Firestore,
     collectionName: X,
     subCol: K,
-    path: CollectionPath,
+    path: CollectionPath
   ) {
     this.subCol = subCol;
     this.collectionName = collectionName;
@@ -38,14 +40,14 @@ export class Collection<
   copy = (
     db: Firestore | undefined,
     newPath: CollectionPath,
-    docId: string | undefined,
+    docId: string | undefined
   ) => {
     const nSubCol = {} as any;
     Object.keys(this.subCol).forEach((key) => {
       nSubCol[key] = this.subCol[key].copy(
         db ?? this.db,
         newPath.subRoute(docId, this.subCol[key].collectionName),
-        undefined,
+        undefined
       );
     });
 
@@ -53,7 +55,7 @@ export class Collection<
       db ?? this.db,
       this.collectionName,
       nSubCol,
-      newPath,
+      newPath
     );
   };
 
@@ -69,26 +71,47 @@ export class Collection<
     >;
   };
 
-  // where(
-  //   fieldPath: string | FieldPath,
-  //   opStr: WhereFilterOp,
-  //   value: any
-  // ): Query<AppModelType, DbModelType>;
+  get query() {
+    return new TFQuery<T, Collection<X, T, K>>(this);
+  }
 
-  // get where() {
-  //   return new Query<T>(this.db.collection(this.path)).where;
+  // where<K extends QueryKey<T> = QueryKey<T>>(
+  //   fieldPath: K,
+  //   opStr: FirebaseFirestore.WhereFilterOp,
+  //   value: T[K]
+  // ) {
+  //   return new Query<T>(this.db.collection(this.path)).where(
+  //     fieldPath,
+  //     opStr,
+  //     value
+  //   );
   // }
+
+  limit = (limit: number) => {
+    return new Query<T>(this.db.collection(this.path)).limit(limit);
+  };
 
   where<K extends QueryKey<T> = QueryKey<T>>(
     fieldPath: K,
     opStr: FirebaseFirestore.WhereFilterOp,
-    value: T[K],
-  ) {
-    return new Query<T>(this.db.collection(this.path)).where(
-      fieldPath,
-      opStr,
-      value,
-    );
+    value: T[K]
+  ): Query<T>;
+  where(filter: Filter<T>): Query<T>;
+
+  where(
+    fieldKeyOrFilter: QueryKey<T> | Filter<T>,
+    opStr?: FirebaseFirestore.WhereFilterOp,
+    value?: T[QueryKey<T>]
+  ): Query<T> {
+    if (typeof fieldKeyOrFilter === "string") {
+      return new Query<T>(this.db.collection(this.path)).where(
+        fieldKeyOrFilter,
+        opStr!,
+        value!
+      );
+    }
+
+    return new Query<T>(this.db.collection(this.path)).where(fieldKeyOrFilter);
   }
 
   // getData = () =>
@@ -100,7 +123,7 @@ export class Collection<
       this.db,
       this.pathPlaceHolder,
       docId,
-      this.copy(undefined, this.pathPlaceHolder, docId).subCol,
+      this.copy(undefined, this.pathPlaceHolder, docId).subCol
     );
   };
 }
