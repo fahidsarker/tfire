@@ -31,6 +31,9 @@ export class TFQuery<T extends DocData, Col extends Collection<string, T, {}>> {
 
   findFirst = async (q?: {
     where?: QueryFilter<T>;
+    orderBy?: {
+      [key in keyof T]?: "asc" | "desc";
+    };
   }): Promise<T | undefined> => {
     const { where } = q ?? {};
 
@@ -42,6 +45,10 @@ export class TFQuery<T extends DocData, Col extends Collection<string, T, {}>> {
 
     query = query.limit(1);
 
+    for (const [key, value] of Object.entries(q?.orderBy ?? {})) {
+      query = query.orderBy(key as QueryKey<T>, value);
+    }
+
     const snap = await query.get();
 
     return snap.docs[0]?.data();
@@ -50,6 +57,9 @@ export class TFQuery<T extends DocData, Col extends Collection<string, T, {}>> {
   findMany = async (q?: {
     where?: QueryFilter<T>;
     limit?: number;
+    orderBy?: {
+      [key in keyof T]?: FirebaseFirestore.OrderByDirection;
+    };
   }): Promise<T[]> => {
     const { where, limit } = q ?? {};
 
@@ -57,6 +67,10 @@ export class TFQuery<T extends DocData, Col extends Collection<string, T, {}>> {
 
     if (where) {
       query = query.where(TFQuery.buildWhere(where));
+    }
+
+    for (const [key, value] of Object.entries(q?.orderBy ?? {})) {
+      query = query.orderBy(key as QueryKey<T>, value);
     }
 
     if (limit) {

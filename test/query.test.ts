@@ -71,6 +71,18 @@ describe("Query tests", () => {
   it("should query all 3 docs with email 'email'", async () => {
     const users = await db.users.where("email", "==", "email").get();
     expect(users.docs.length).toBe(3);
+    expect(users.docs[0].data().name).toBe("User 1");
+  });
+
+  it("should query all 3 docs with email 'email' but in reverse order", async () => {
+    const users = await db.users.query.findMany({
+      where: where("email", "==", "email"),
+      orderBy: {
+        name: "desc",
+      },
+    });
+    expect(users.length).toBe(3);
+    expect(users[0].name).toBe("User 5");
   });
 
   // same with tuery

@@ -91,6 +91,16 @@ export class Collection<
     return new Query<T>(this.db.collection(this.path)).limit(limit);
   };
 
+  orderBy = <K extends QueryKey<T>>(
+    fieldPath: K,
+    directionStr?: FirebaseFirestore.OrderByDirection
+  ) => {
+    return new Query<T>(this.db.collection(this.path)).orderBy(
+      fieldPath,
+      directionStr
+    );
+  };
+
   where<K extends QueryKey<T> = QueryKey<T>>(
     fieldPath: K,
     opStr: FirebaseFirestore.WhereFilterOp,
