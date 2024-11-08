@@ -12,11 +12,13 @@ jobs:
         with:
           node-version: "18"
           registry-url: "https://registry.npmjs.org"
-      - run: echo "${{ secrets.ENV }}" > .env
       - run: npm install jest --save-dev
       - run: npm run test
       - run: npm ci
       - run: npm run build
       - run: npm publish
         env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
