@@ -1,0 +1,27 @@
+name: Test with Firebase Admin
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Create secrets directory
+      run: mkdir -p secrets
+
+    - name: Setup Firebase Admin credentials
+      run: echo '${{ secrets.firebase_admin_json }}' > secrets/firebase-admin-key.json
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test

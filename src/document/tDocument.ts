@@ -1,94 +1,42 @@
-import { SafeParseReturnType } from "zod";
-import {
-  CollectionSchemas,
-  SchemasToCollections,
-  TrueCollectionSchemas,
-  ValidCollectionPath,
-} from "../types/collections";
+import { CollectionSchemas, SchemasToCollections } from "../types/collections";
 import { BaseDBSchema, DocData } from "../types/doc_data";
-import { Firestore, WriteResult } from "../types/firestore";
+import { Firestore } from "../types/firestore";
+import { DocGetters } from "./get-doc";
+import { DocDeleters } from "./remove-doc";
+import { DocSetters } from "./set-doc";
+import { DocSubCollections } from "./sub-collection";
 
-export class TDocument<
+export const createDoc = <
   D extends BaseDBSchema,
   SubCollections extends CollectionSchemas,
-> {
-  readonly id: string;
-  readonly path: string;
-  private readonly subCollections: SchemasToCollections<SubCollections>;
-  private readonly db: Firestore;
-  private readonly schema: D;
+>(
+  id: string,
+  collectionPath: string,
+  db: Firestore,
+  schema: D,
+  subs: SubCollections
+) => {
+  let subCols = {} as SchemasToCollections<SubCollections>;
 
-  constructor(
-    id: string,
-    path: string,
-    db: Firestore,
-    schema: D,
-    subCollections: SchemasToCollections<SubCollections>
-  ) {
-    this.id = id;
-    this.path = path;
-    this.db = db;
-    this.schema = schema;
-    this.subCollections = subCollections;
-  }
+  Object.keys(subs).forEach((key) => {
+    subCols = {
+      ...subCols,
+      [key]: subs[key].build(db, `${collectionPath}/${id}`),
+    };
+  });
 
-  collection = <K extends keyof TrueCollectionSchemas<SubCollections>>(
-    path: ValidCollectionPath<TrueCollectionSchemas<SubCollections>, K>
-  ) => {
-    const c = Object.values(this.subCollections).find((s) => s.name === path);
-    if (!c) {
-      throw new Error(
-        `Collection ${path as string} not found in ${this.subCollections}`
-      );
-    }
-    return c;
+  const docPath = `${collectionPath}/${id}`;
+
+  return {
+    id: id,
+    path: `${collectionPath}/${id}`,
+
+    ...subCols,
+    ...DocSubCollections<SubCollections>(subCols),
+    ...DocSetters<D>(db, schema, docPath),
+    ...DocGetters<D>(db, schema, docPath),
+    ...DocDeleters(db, docPath),
+    // safeSet: doc.safeSet,
+    // get: doc.get,
   };
-
-  // set(
-  //   data: PartialWithFieldValue<AppModelType>,
-  //   options: SetOptions
-  // ): Promise<WriteResult>;
-  // set(data: WithFieldValue<AppModelType>): Promise<WriteResult>;
-
-  // set(
-  //   // data: WithFieldValue<DocData<D>>, // todo change to field value
-  //   data: DocData<D>,
-  //   options?: FirebaseFirestore.SetOptions
-  // ): Promise<WriteResult> {
-  //   const v = this.schema.parse(data);
-  //   return options
-  //     ? this.db.doc(this.path).set(v, options)
-  //     : this.db.doc(this.path).set(v);
-  // }
-
-  // async safeSet(
-  //   // data: WithFieldValue<DocData<D>>, // todo change to field value
-  //   data: DocData<D>,
-  //   options?: FirebaseFirestore.SetOptions
-  // ): Promise<SafeParseReturnType<DocData<D>, WriteResult>> {
-  //   const v = this.schema.safeParse(data);
-
-  //   if (v.success === false) {
-  //     return v;
-  //   }
-
-  //   return {
-  //     ...v,
-  //     data: options
-  //       ? await this.db.doc(this.path).set(v, options)
-  //       : await this.db.doc(this.path).set(v),
-  //   };
-  // }
-
-  get = async (): Promise<
-    FirebaseFirestore.DocumentSnapshot<DocData<D>, DocData<D>>
-  > => {
-    const res = await this.db.doc(this.path).get();
-    const dta = res.data();
-    if (!dta) {
-      return res;
-    }
-    this.schema.parse(dta);
-    return res;
-  };
-}
+};

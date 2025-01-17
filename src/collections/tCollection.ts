@@ -1,7 +1,7 @@
 import { CollectionSchemas } from "../types/collections";
 import { Firestore } from "../types/firestore";
 import { BaseDBSchema } from "../types/doc_data";
-import { createDoc } from "../document/create-doc";
+import { createDoc } from "../document/tDocument";
 
 export type DocTypeOfCollection<
   T extends TCollection<string, BaseDBSchema, {}>,

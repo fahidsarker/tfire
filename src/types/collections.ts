@@ -2,7 +2,7 @@ import { ZodObject, ZodRawShape } from "zod";
 import { CollectionSchema } from "../collections/CollectionSchema";
 import { TCollection } from "../collections/tCollection";
 import { BaseDBSchema } from "./doc_data";
-import { createDoc } from "../document/create-doc";
+import { createDoc } from "../document/tDocument";
 
 export type CollectionSchemaBase = CollectionSchema<string, BaseDBSchema, {}>;
 export type CollectionSchemas = {
