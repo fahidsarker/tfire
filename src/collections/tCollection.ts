@@ -1,21 +1,15 @@
-import { ZodObject, ZodRawShape } from "zod";
-import {
-  CollectionSchemaBase,
-  CollectionSchemas,
-  FindCollectionFromPath,
-  SchemasToCollections,
-  TrueCollectionSchemas,
-  ValidCollectionPath,
-} from "../types/collections";
+import { CollectionSchemas } from "../types/collections";
 import { Firestore } from "../types/firestore";
+import { BaseDBSchema } from "../types/doc_data";
+import { createDoc } from "../document/create-doc";
 
 export type DocTypeOfCollection<
-  T extends TCollection<string, ZodObject<ZodRawShape>, {}>,
+  T extends TCollection<string, BaseDBSchema, {}>,
 > = ReturnType<typeof createDoc<T["schema"], T["subCollectionSchemas"]>>;
 
 export class TCollection<
   N extends string,
-  D extends ZodObject<ZodRawShape>,
+  D extends BaseDBSchema,
   SubCollections extends CollectionSchemas,
 > {
   readonly name: N;
@@ -61,41 +55,3 @@ export class TCollection<
     );
   }
 }
-
-export const createDoc = <
-  D extends ZodObject<ZodRawShape>,
-  SubCollections extends CollectionSchemas,
->(
-  id: string,
-  collectionPath: string,
-  db: Firestore,
-  schema: D,
-  subs: SubCollections
-) => {
-  let subCols = {} as SchemasToCollections<SubCollections>;
-
-  Object.keys(subs).forEach((key) => {
-    subCols = {
-      ...subCols,
-      [key]: subs[key].build(db, `${collectionPath}/${id}`),
-    };
-  });
-
-  return {
-    id,
-    ...subCols,
-    collection: <K extends keyof TrueCollectionSchemas<SubCollections>>(
-      path: ValidCollectionPath<TrueCollectionSchemas<SubCollections>, K>
-    ) => {
-      const c = Object.values(subCols).find((s) => s.name === path);
-      if (!c) {
-        throw new Error(
-          `Collection ${path as string} not found in ${collectionPath}`
-        );
-      }
-      return c;
-    },
-    path: `${collectionPath}/${id}`,
-    get: () => db.doc(`${collectionPath}/${id}`).get(),
-  };
-};

@@ -1,12 +1,10 @@
 import { ZodObject, ZodRawShape } from "zod";
 import { CollectionSchema } from "../collections/CollectionSchema";
-import { createDoc, TCollection } from "../collections/tCollection";
+import { TCollection } from "../collections/tCollection";
+import { BaseDBSchema } from "./doc_data";
+import { createDoc } from "../document/create-doc";
 
-export type CollectionSchemaBase = CollectionSchema<
-  string,
-  ZodObject<ZodRawShape>,
-  {}
->;
+export type CollectionSchemaBase = CollectionSchema<string, BaseDBSchema, {}>;
 export type CollectionSchemas = {
   [key: string]: CollectionSchemaBase;
 };
@@ -33,7 +31,7 @@ export type SchemaToCollection<
 > = TCollection<Schema["name"], Schema["schema"], Schema["subCollections"]>;
 
 export type CollectionToSchema<
-  Collection extends TCollection<string, ZodObject<ZodRawShape>, {}>,
+  Collection extends TCollection<string, BaseDBSchema, {}>,
 > = CollectionSchema<
   Collection["name"],
   Collection["schema"],

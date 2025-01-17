@@ -6,3 +6,4 @@ export type DocRef<
 > = FirebaseFirestore.DocumentReference<AppModelType, DbModelType>;
 
 export type DocData = FirebaseFirestore.DocumentData;
+export type WriteResult = FirebaseFirestore.WriteResult;

@@ -4,40 +4,30 @@ import { Timestamp } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import dotenv from "dotenv";
 dotenv.config();
+
+var serviceAccount = require("../secrets/firebase-admin-key.json");
+
 admin.initializeApp({
-  projectId: "test",
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY,
-  }),
+  credential: admin.credential.cert(serviceAccount),
 });
 
-class Child {}
-
-const xComments = collection("comments", {
+const comments = collection("comments", {
   id: z.string(),
   comment: z.string(),
-  name: z.string(),
-  age: z.number(),
-  email: z.string().optional(),
 });
 
-const nPosts = collection(
+const posts = collection(
   "posts",
   {
     id: z.string(),
-    post: z.string(),
-    description: z.string(),
     name: z.string(),
-    publishDate: z.instanceof(Timestamp),
     age: z.number(),
     email: z.string().optional(),
   },
-  { xComments }
+  { comments }
 );
 
-const nUsers = collection(
+export const users = collection(
   "users",
   {
     id: z.string(),
@@ -45,20 +35,32 @@ const nUsers = collection(
     age: z.number(),
     email: z.string().optional(),
     password: z.string(),
-    dob: z.date(),
-    child: z.instanceof(Child),
+    dob: z.instanceof(Timestamp),
+    createdAt: z.instanceof(Timestamp),
   },
-  { nPosts }
+  { comments, posts }
 );
 
-const families = collection("families", {
-  id: z.string(),
-  name: z.string(),
-});
+const families = collection(
+  "families",
+  {
+    id: z.string(),
+    name: z.string(),
+  },
+  { users }
+);
+
+const tests = collection(
+  "_tests",
+  {
+    id: z.string(),
+    name: z.string(),
+    age: z.number(),
+    email: z.string().optional(),
+  },
+  { families, users }
+);
 
 export const db = tFire(admin.firestore(), {
-  nUsers,
-  nPosts,
-  xComments,
-  families,
+  tests,
 });

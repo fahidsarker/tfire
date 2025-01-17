@@ -1,26 +1,20 @@
-import { z, ZodObject, ZodRawShape } from "zod";
+import { z } from "zod";
 import {
   CollectionSchemas,
-  CollectionToSchema,
   FindCollectionFromPath,
   FindDocTypeFromPath,
   SchemasToCollections,
-  SchemaToCollection,
   TrueCollectionSchemas,
   ValidCollectionPath,
   ValidDocPath,
 } from "./types/collections";
 import { CollectionSchema } from "./collections/CollectionSchema";
 import { Firestore } from "./types/firestore";
-import {
-  createDoc,
-  DocTypeOfCollection,
-  TCollection,
-} from "./collections/tCollection";
+import { BaseDBSchema, BaseSupportedSchemaDef } from "./types/doc_data";
 
 export function collection<
   N extends string,
-  D extends ZodRawShape,
+  D extends BaseSupportedSchemaDef,
   SubCollections extends CollectionSchemas,
 >(name: N, schema: D, subCollections: SubCollections = {} as SubCollections) {
   return new CollectionSchema(name, z.object(schema), subCollections);
@@ -72,8 +66,7 @@ const createCollection = <T extends CollectionSchemas, K extends string>(
     throw new Error(`Invalid path ${path}`);
   }
 
-  let col: CollectionSchema<string, ZodObject<ZodRawShape>, any> | undefined =
-    undefined;
+  let col: CollectionSchema<string, BaseDBSchema, any> | undefined = undefined;
 
   for (let i = 0; i < segments.length; i += 2) {
     const key = segments[i];
@@ -97,7 +90,7 @@ const createCollection = <T extends CollectionSchemas, K extends string>(
 
   let parentPath = segments.slice(0, segments.length - 1).join("/");
 
-  return col.build(db, parentPath) as FindCollectionFromPath<
+  return col.build(db, parentPath) as unknown as FindCollectionFromPath<
     TrueCollectionSchemas<T>,
     K
   >;

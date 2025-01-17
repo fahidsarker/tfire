@@ -2,10 +2,11 @@ import { z, ZodObject, ZodRawShape } from "zod";
 import { CollectionSchemas } from "../types/collections";
 import { TCollection } from "./tCollection";
 import { Firestore } from "../types/firestore";
+import { BaseDBSchema } from "../types/doc_data";
 
 export class CollectionSchema<
   N extends string,
-  D extends ZodObject<ZodRawShape>,
+  D extends BaseDBSchema,
   SubCollections extends CollectionSchemas,
 > {
   name: N;

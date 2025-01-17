@@ -3,52 +3,39 @@
 import { db } from "./schemas";
 
 describe("Collection/Doc Path matching", () => {
-  it("should match /users", async () => {
-    const users = db.collection("users");
-    expect(users.path).toBe("users");
-  });
-  it("should match /users/uid", async () => {
-    const users = db.collection("users");
-    const user = users.doc("uid");
-    expect(user.path).toBe("users/uid");
-  });
-  it("should match /users/uid/posts", async () => {
-    const users = db.collection("users");
-    const user = users.doc("uid");
-    expect(user.path).toBe("users/uid");
-    const posts = user.nPosts;
-    expect(posts.path).toBe("users/uid/posts");
+  it("should match /_tests", async () => {
+    const tests = db.collection("_tests");
+    expect(tests.path).toBe("_tests");
   });
 
-  it("should match /users/uid/posts/pid", async () => {
-    const users = db.collection("users");
+  it("should match /_tests/users", async () => {
+    const users = db.collection("_tests/tit/users");
+    expect(users.path).toBe("_tests/tit/users");
     const user = users.doc("uid");
-    expect(user.path).toBe("users/uid");
-    const posts = user.nPosts;
-    expect(posts.path).toBe("users/uid/posts");
+    expect(user.path).toBe("_tests/tit/users/uid");
+    const docUser = db.doc("_tests/tit/users/uid");
+    expect(docUser.path).toBe("_tests/tit/users/uid");
+    expect(docUser.id).toBe("uid");
+  });
+
+  it("should match /_tests/users/uid/posts", async () => {
+    const posts = db.collection("_tests/tit/users/uid/posts");
+    expect(posts.path).toBe("_tests/tit/users/uid/posts");
     const post = posts.doc("pid");
-    expect(post.path).toBe("users/uid/posts/pid");
+    expect(post.path).toBe("_tests/tit/users/uid/posts/pid");
   });
 
-  it("should match /users/uid/posts/pid", async () => {
-    const users = db.collection("users");
-    const user = users.doc("uid");
-    const posts = user.collection("posts");
-    const post = posts.doc("pid");
-    expect(post.path).toBe("users/uid/posts/pid");
-  });
-
-  it("should match /users/uid/posts/pid and more", async () => {
-    const post = db.doc("users/uid/posts/pid");
-    expect(post.path).toBe("users/uid/posts/pid");
+  it("should match /_tests/users/uid/posts/pid", async () => {
+    const post = db.doc("_tests/tit/users/uid/posts/pid");
+    expect(post.path).toBe("_tests/tit/users/uid/posts/pid");
     const comments = post.collection("comments");
-    expect(comments.path).toBe("users/uid/posts/pid/comments");
-    const comment = comments.doc("cmd");
-    expect(comment.path).toBe("users/uid/posts/pid/comments/cmd");
-  });
-
-  it("should match /users/uid/posts/pid/comments/cmd", async () => {
-    const comments = db.doc("users/uid/posts/pid/comments/cmd");
-    expect(comments.path).toBe("users/uid/posts/pid/comments/cmd");
+    expect(comments.path).toBe("_tests/tit/users/uid/posts/pid/comments");
+    const comment = comments.doc("cmd1");
+    expect(comment.path).toBe("_tests/tit/users/uid/posts/pid/comments/cmd1");
+    const docComment = db.doc("_tests/tit/users/uid/posts/pid/comments/cmd1");
+    expect(docComment.path).toBe(
+      "_tests/tit/users/uid/posts/pid/comments/cmd1"
+    );
+    expect(docComment.id).toBe("cmd1");
   });
 });
