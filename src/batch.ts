@@ -77,31 +77,4 @@ export class TFireBatch {
   commit() {
     return this.batch.commit();
   }
-
-  /**
-   * Updates fields in the document referred to by the provided
-   * `DocumentReference`. The update will fail if applied to a document that
-   * does not exist.
-   *
-   * Nested fields can be updated by providing dot-separated field path
-   * strings or by providing FieldPath objects.
-   *
-   * A `Precondition` restricting this update can be specified as the last
-   * argument.
-   *
-   * @param documentRef A reference to the document to be updated.
-   * @param field The first field to update.
-   * @param value The first value
-   * @param fieldsOrPrecondition An alternating list of field paths and values
-   * to update, optionally followed a `Precondition` to enforce on this
-   * update.
-   * @throws Error If the provided input is not valid Firestore data.
-   * @return This `WriteBatch` instance. Used for chaining method calls.
-   */
-  //   update(
-  //     documentRef: DocumentReference<any, any>,
-  //     field: string | FieldPath,
-  //     value: any,
-  //     ...fieldsOrPrecondition: any[]
-  //   ): WriteBatch;
 }

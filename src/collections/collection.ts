@@ -80,18 +80,6 @@ export class Collection<
     return new TFQuery<T, Collection<X, T, K>>(this);
   }
 
-  // where<K extends QueryKey<T> = QueryKey<T>>(
-  //   fieldPath: K,
-  //   opStr: FirebaseFirestore.WhereFilterOp,
-  //   value: T[K]
-  // ) {
-  //   return new Query<T>(this.db.collection(this.path)).where(
-  //     fieldPath,
-  //     opStr,
-  //     value
-  //   );
-  // }
-
   limit = (limit: number) => {
     return new Query<T>(this.db.collection(this.path)).limit(limit);
   };
@@ -128,9 +116,6 @@ export class Collection<
 
     return new Query<T>(this.db.collection(this.path)).where(fieldKeyOrFilter);
   }
-
-  // getData = () =>
-  //   this.get().then((query) => query.docs.map((doc) => doc.data()));
 
   doc = <X extends T>(id?: string) => {
     const docId = id ?? newDocId(this.db, this.pathPlaceHolder.path);
