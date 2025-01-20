@@ -5,6 +5,7 @@ import { DocGetters } from "./get-doc";
 import { DocDeleters } from "./remove-doc";
 import { DocSetters } from "./set-doc";
 import { DocSubCollections } from "./sub-collection";
+import { DocUpdaters } from "./update-doc";
 
 export const createDoc = <
   D extends BaseDBSchema,
@@ -34,6 +35,7 @@ export const createDoc = <
     ...subCols,
     ...DocSubCollections<SubCollections>(subCols),
     ...DocSetters<D>(db, schema, docPath),
+    ...DocUpdaters<D>(db, schema, docPath),
     ...DocGetters<D>(db, schema, docPath),
     ...DocDeleters(db, docPath),
     // safeSet: doc.safeSet,

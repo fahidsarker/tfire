@@ -1,8 +1,10 @@
-import { z } from "zod";
 import { collection, tFire } from "../src/ts-fire";
-import { Timestamp } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 import dotenv from "dotenv";
+
+import { z } from "zod";
+import { FieldValue } from "firebase-admin/firestore";
+import { number, string, timestamp } from "../src/schema/elements";
 dotenv.config();
 
 var serviceAccount = require("../secrets/firebase-admin-key.json");
@@ -12,17 +14,17 @@ admin.initializeApp({
 });
 
 const comments = collection("comments", {
-  id: z.string(),
-  comment: z.string(),
+  id: string(),
+  comment: string(),
 });
 
 const posts = collection(
   "posts",
   {
-    id: z.string(),
-    name: z.string(),
-    age: z.number(),
-    email: z.string().optional(),
+    id: string(),
+    name: string().nullable(),
+    age: number(),
+    email: string().nullable(),
   },
   { comments }
 );
@@ -30,13 +32,13 @@ const posts = collection(
 export const users = collection(
   "users",
   {
-    id: z.string(),
-    name: z.string(),
-    age: z.number(),
-    email: z.string().optional(),
-    password: z.string(),
-    dob: z.instanceof(Timestamp),
-    createdAt: z.instanceof(Timestamp),
+    id: string(),
+    name: string(),
+    age: number(),
+    email: string().nullable(),
+    password: string(),
+    dob: timestamp(),
+    createdAt: timestamp(),
   },
   { comments, posts }
 );
@@ -44,8 +46,8 @@ export const users = collection(
 const families = collection(
   "families",
   {
-    id: z.string(),
-    name: z.string(),
+    id: string(),
+    name: string(),
   },
   { users }
 );
@@ -53,10 +55,10 @@ const families = collection(
 const tests = collection(
   "_tests",
   {
-    id: z.string(),
-    name: z.string(),
-    age: z.number(),
-    email: z.string().optional(),
+    id: string(),
+    name: string(),
+    age: number(),
+    email: string().nullable(),
   },
   { families, users }
 );

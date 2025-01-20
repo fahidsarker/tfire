@@ -11,13 +11,15 @@ import {
 import { CollectionSchema } from "./collections/CollectionSchema";
 import { Firestore } from "./types/firestore";
 import { BaseDBSchema, BaseSupportedSchemaDef } from "./types/doc_data";
+import { BaseTFireSchemaShape } from "./schema/tfire_schema";
+import { object } from "./schema/elements";
 
 export function collection<
   N extends string,
-  D extends BaseSupportedSchemaDef,
+  D extends BaseTFireSchemaShape,
   SubCollections extends CollectionSchemas,
 >(name: N, schema: D, subCollections: SubCollections = {} as SubCollections) {
-  return new CollectionSchema(name, z.object(schema), subCollections);
+  return new CollectionSchema(name, object(schema).build(), subCollections);
 }
 
 export const tFire = <T extends CollectionSchemas>(
